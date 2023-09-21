@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -15,6 +16,8 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+
+using OfficeOpenXml;
 
 using RevitAPI_Testing.Forms;
 //using Forms = System.Windows.Forms;
@@ -43,7 +46,7 @@ namespace RevitAPI_Testing
                     $" Be \n" +
                     $" A MultiLine \n" +
                     $" Message \n";
-            InfoForm.TempDialog(2, m);
+            //InfoForm.TempDialog(2, m);
 
             // Get all text note types
 
@@ -77,14 +80,77 @@ namespace RevitAPI_Testing
 
                 // Add the TextTypeData instance to the list
                 textTypesParameters.Add(textTypeData);
-
-
             }
 
-
-
+            //// Create and show the TextTypeDataWindow
+            //var textTypeDataWindow = new TextTypeDataWindow(textTypesParameters);
+            //textTypeDataWindow.ShowDialog();
+            string filePath = @"C:\Users\Ohernandez\Desktop\MyTextTypesExport.xlsx";
+            ExportToExcel(textTypesParameters, filePath);
 
             return Result.Succeeded;
+        }
+
+        private void ExportToExcel(List<TextTypeData> textTypesParameters, string filePath)
+        {
+            if (textTypesParameters == null || !textTypesParameters.Any())
+            {
+                throw new ArgumentException("The data list is empty or null.");
+            }
+
+            // Create a new Excel package
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Text Type Data");
+
+                // Set the header row
+                var headers = new List<string>
+                {
+                    "Family Name",
+                    "Type Name",
+                    "Color",
+                    "Line Weight",
+                    "Background",
+                    "Show Border",
+                    "Leader Border Offset",
+                    "Leader Arrowhead",
+                    "Bold",
+                    "Italic",
+                    "Underline",
+                    "Width Factor"
+                };
+
+                for (var col = 1; col <= headers.Count; col++)
+                {
+                    worksheet.Cells[1, col].Value = headers[col - 1];
+                }
+
+                // Add data rows
+                for (var row = 0; row < textTypesParameters.Count; row++)
+                {
+                    var textType = textTypesParameters[row];
+
+                    worksheet.Cells[row + 2, 1].Value = textType.FamilyName;
+                    worksheet.Cells[row + 2, 2].Value = textType.TypeName;
+                    worksheet.Cells[row + 2, 3].Value = textType.Color;
+                    worksheet.Cells[row + 2, 4].Value = textType.LineWeight;
+                    worksheet.Cells[row + 2, 5].Value = textType.Background;
+                    worksheet.Cells[row + 2, 6].Value = textType.ShowBorder;
+                    worksheet.Cells[row + 2, 7].Value = textType.LeaderBorderOffset;
+                    worksheet.Cells[row + 2, 8].Value = textType.LeaderArrowhead;
+                    worksheet.Cells[row + 2, 9].Value = textType.Bold;
+                    worksheet.Cells[row + 2, 10].Value = textType.Italic;
+                    worksheet.Cells[row + 2, 11].Value = textType.Underline;
+                    worksheet.Cells[row + 2, 12].Value = textType.WidthFactor;
+                }
+
+                // Save the Excel package to a file
+                FileInfo excelFile = new FileInfo(filePath);
+                package.SaveAs(excelFile);
+                Process.Start(filePath);
+            }
         }
 
         private string GetWidthFactor(TextNoteType textNoteType)
