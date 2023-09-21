@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>RevitAPI_Testing - Command 1</Text>
+    <Description>Some description for RevitAPI_Testing</Description>
+    <Assembly>RevitAPI_Testing.dll</Assembly>
+    <FullClassName>RevitAPI_Testing.Command1</FullClassName>
+    <ClientId>ece85b63-8bbb-474e-a879-fe1a41860141</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Command">
+    <Text>RevitAPI_Testing - Command 2</Text>
+    <Description>Some description for RevitAPI_Testing</Description>
+    <Assembly>RevitAPI_Testing.dll</Assembly>
+    <FullClassName>RevitAPI_Testing.Command2</FullClassName>
+    <ClientId>a04de686-0eca-4db4-b652-511bc09d5000</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>RevitAPI_Testing</Name>
+    <Assembly>RevitAPI_Testing.dll</Assembly>
+    <FullClassName>RevitAPI_Testing.App</FullClassName>
+    <ClientId>f8c83322-9a1c-46f1-8b55-bc6d52e00b26</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+</RevitAddIns>

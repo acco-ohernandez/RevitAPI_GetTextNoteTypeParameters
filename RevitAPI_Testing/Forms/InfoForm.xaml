@@ -1,0 +1,23 @@
+﻿<Window x:Class="RevitAPI_Testing.Forms.InfoForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RevitAPI_Testing.Forms"
+             mc:Ignorable="d" 
+             Title="Info"
+             d:DesignHeight="200" d:DesignWidth="350">
+
+    <Grid x:Name="mainGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!--<This "Message" Label is to be updated by the InfoForm instances that call it/>-->
+            <Label Grid.Row="0" 
+                   x:Name="lbl_Message" 
+                   Content="Test" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   FontSize="16" FontWeight="Bold" 
+                   Margin="5"
+                   />
+           
+    </Grid>
+</Window>
