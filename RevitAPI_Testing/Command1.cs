@@ -56,7 +56,6 @@ namespace RevitAPI_Testing
             // Define a list to hold text type data
             List<TextTypeData> textTypesParameters = new List<TextTypeData>();
 
-            int c = 1;
             foreach (TextNoteType textNoteType in textNoteTypes)
             {
                 // Create an instance of TextTypeData for the current text note type
@@ -80,89 +79,10 @@ namespace RevitAPI_Testing
                 // Add the TextTypeData instance to the list
                 textTypesParameters.Add(textTypeData);
 
-                //// Process each text note type as needed
-                //Debug.Print($"{c}. Text Note Type: {textNoteType.Name}");
 
-                //    // Iterate through parameters of the current text note type
-                //    foreach (Parameter param in textNoteType.Parameters)
-                //    {
-                //        // Access parameter properties as needed
-                //        string paramName = param.Definition.Name;
-                //        string paramValue;
-
-                //        // Use a switch to handle different StorageTypes
-                //        switch (param.StorageType)
-                //        {
-                //            case StorageType.String:
-                //                paramValue = param.AsString();
-                //                break;
-                //            case StorageType.Integer:
-                //                paramValue = param.AsInteger().ToString();
-                //                break;
-                //            case StorageType.Double:
-                //                paramValue = param.AsDouble().ToString();
-                //                break;
-                //            case StorageType.ElementId:
-                //                paramValue = param.AsElementId().IntegerValue.ToString();
-                //                break;
-                //            default:
-                //                paramValue = "(Unsupported StorageType)";
-                //                break;
-                //        }
-
-                //        // Print parameter information
-                //        Debug.Print($"   - Parameter: {paramName} -----------> Value: {paramValue}");
-                //    }
-
-                //    c++;
             }
 
 
-            // 
-            ////List<TextTypeData> textTypesParameters = new List<TextTypeData>();
-
-            ////int c = 1;
-            ////foreach (TextNoteType textNoteType in textNoteTypes)
-            ////{
-            ////    // Process each text note type as needed
-            ////    // You can access type properties, parameters, etc.
-            ////    Debug.Print($"{c}. Text Note Type: {textNoteType.Name}");
-
-            ////    // Iterate through parameters of the current text note type
-            ////    foreach (Parameter param in textNoteType.Parameters)
-            ////    {
-            ////        // Access parameter properties as needed
-            ////        string paramName = param.Definition.Name;
-            ////        string paramValue;
-
-            ////        // Use a switch to handle different StorageTypes
-            ////        switch (param.StorageType)
-            ////        {
-            ////            case StorageType.String:
-            ////                paramValue = param.AsString();
-            ////                break;
-            ////            case StorageType.Integer:
-            ////                paramValue = param.AsInteger().ToString();
-            ////                break;
-            ////            case StorageType.Double:
-            ////                paramValue = param.AsDouble().ToString();
-            ////                break;
-            ////            case StorageType.ElementId:
-            ////                paramValue = param.AsElementId().IntegerValue.ToString();
-            ////                break;
-            ////            default:
-            ////                paramValue = "(Unsupported StorageType)";
-            ////                break;
-            ////        }
-
-            ////        // Print parameter information
-            ////        Debug.Print($" - Parameter: {paramName} -----------> Value: {paramValue}");
-
-            ////        // ChatGPT add the parameter values to the textTypesParameters List
-            ////    }
-
-            ////    c++;
-            ////}
 
 
             return Result.Succeeded;
