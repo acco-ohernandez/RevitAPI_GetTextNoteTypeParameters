@@ -72,7 +72,6 @@ namespace RevitAPI_Testing
                     Bold = GetIsBold(textNoteType),
                     Italic = textNoteType.get_Parameter(BuiltInParameter.TEXT_STYLE_ITALIC).AsInteger() == 1 ? "Yes" : "No",
                     Underline = GetIsUnderlined(textNoteType),
-                    //    WidthFactor = textNoteType.get_Parameter(BuiltInParameter.TEXT_WIDTH_SCALE).IsDetermined ? textNoteType.get_Parameter(BuiltInParameter.TEXT_WIDTH_SCALE).AsString() : "Not Determined"
                     WidthFactor = GetWidthFactor(textNoteType)
                 };
 
