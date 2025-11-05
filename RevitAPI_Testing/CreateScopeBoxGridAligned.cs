@@ -86,7 +86,7 @@ namespace RevitAPI_Testing
                             IncludeOriginalInResult = true,
                             BaseName = "Scope Box",
                             WriteNameToComments = true,
-                            ManageTransactions = false
+                            ManageTransactions = false // we are already in a transaction. if true, it would create nested transactions (which Revit does not allow)
                         };
 
                         int rows = 10;
