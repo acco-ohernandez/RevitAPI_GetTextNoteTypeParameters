@@ -46,7 +46,7 @@ namespace RevitAPI_Testing
                     $" Be \n" +
                     $" A MultiLine \n" +
                     $" Message \n";
-            //InfoForm.TempDialog(2, m);
+            InfoForm.TempDialog(5, m);
 
             // Get all text note types
 
@@ -66,16 +66,16 @@ namespace RevitAPI_Testing
                 {
                     FamilyName = textNoteType.FamilyName,
                     TypeName = textNoteType.Name,
-                    Color = GetColorFromParameter(textNoteType),
-                    LineWeight = GetLineWeightFromParameter(textNoteType),
-                    Background = GetBackGroundFromParameter(textNoteType),
-                    ShowBorder = GetShowBorder(textNoteType),
-                    LeaderBorderOffset = GetLeaderBorderOffset(textNoteType),
-                    LeaderArrowhead = GetLeaderArrowHead(textNoteType),
+                    //Color = GetColorFromParameter(textNoteType),
+                    //LineWeight = GetLineWeightFromParameter(textNoteType),
+                    //Background = GetBackGroundFromParameter(textNoteType),
+                    //ShowBorder = GetShowBorder(textNoteType),
+                    //LeaderBorderOffset = GetLeaderBorderOffset(textNoteType),
+                    //LeaderArrowhead = GetLeaderArrowHead(textNoteType),
                     Bold = GetIsBold(textNoteType),
-                    Italic = textNoteType.get_Parameter(BuiltInParameter.TEXT_STYLE_ITALIC).AsInteger() == 1 ? "Yes" : "No",
-                    Underline = GetIsUnderlined(textNoteType),
-                    WidthFactor = GetWidthFactor(textNoteType)
+                    //Italic = textNoteType.get_Parameter(BuiltInParameter.TEXT_STYLE_ITALIC).AsInteger() == 1 ? "Yes" : "No",
+                    //Underline = GetIsUnderlined(textNoteType),
+                    //WidthFactor = GetWidthFactor(textNoteType)
                 };
 
                 // Add the TextTypeData instance to the list
