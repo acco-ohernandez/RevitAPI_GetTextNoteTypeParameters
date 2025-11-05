@@ -13,7 +13,7 @@
     <Text>RevitAPI_Testing - Command 2</Text>
     <Description>Some description for RevitAPI_Testing</Description>
     <Assembly>RevitAPI_Testing.dll</Assembly>
-    <FullClassName>RevitAPI_Testing.CreateScopeBoxGridAligned</FullClassName>
+    <FullClassName>RevitAPI_Testing.Command2</FullClassName>
     <ClientId>a04de686-0eca-4db4-b652-511bc09d5000</ClientId>
     <VendorId>com.YOUR COMPANY NAME</VendorId>
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>

@@ -1,7 +1,13 @@
 #region Namespaces
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Versioning;
+using System.Windows.Markup;
 
+using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
 #endregion
@@ -25,14 +31,14 @@ namespace RevitAPI_Testing
             }
 
             // 2. Create ribbon panel 
-            //RibbonPanel panel = Utils.CreateRibbonPanel(app, tabName, "Copy Templates");
+            RibbonPanel panel = Utils.CreateRibbonPanel(app, tabName, "Revit Tools");
 
             //// 3. Create button data instances
-            //PushButtonData btnData_CopyTemplates = Cmd_CopyTemplates.GetButtonData();
+            PushButtonData btnData1 = Command1.GetButtonData();
             //PushButtonData btnData2 = Command2.GetButtonData();
 
             //// 4. Create buttons
-            //PushButton btnCopyTemplates = panel.AddItem(btnData_CopyTemplates) as PushButton;
+            PushButton myButton1 = panel.AddItem(btnData1) as PushButton;
             //PushButton myButton2 = panel.AddItem(btnData2) as PushButton;
 
             // NOTE:

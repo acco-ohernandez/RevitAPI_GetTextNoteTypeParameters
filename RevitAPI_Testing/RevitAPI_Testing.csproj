@@ -179,12 +179,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="Common\Classes\ScopeBoxProperties.cs" />
     <Compile Include="Forms\TextTypeDataWindow.xaml.cs">
       <DependentUpon>TextTypeDataWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ButtonDataClass.cs" />
-    <Compile Include="CreateScopeBoxGridAligned.cs" />
+    <Compile Include="Command2.cs" />
     <Compile Include="Command1.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
