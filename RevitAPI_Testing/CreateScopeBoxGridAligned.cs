@@ -89,8 +89,8 @@ namespace RevitAPI_Testing
                             ManageTransactions = false // we are already in a transaction. if true, it would create nested transactions (which Revit does not allow)
                         };
 
-                        int rows = 10;
-                        int cols = 5;
+                        int rows = 2;
+                        int cols = 2;
 
                         // overlapX / overlapY in INTERNAL FEET (convert from UI if needed)
                         double overlapX = overlap;

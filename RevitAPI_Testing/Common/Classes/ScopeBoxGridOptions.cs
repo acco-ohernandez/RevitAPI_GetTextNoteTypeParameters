@@ -56,7 +56,7 @@ namespace RevitAPI_Testing
     }
 
     /// <summary>
-    /// Builds an N×M grid of scope boxes from a picked seed. Rotation-proof, overlap-aware.
+    /// Builds an N×M (rows×columns) grid of scope boxes from a picked seed. Rotation-proof, overlap-aware.
     /// </summary>
     public static class ScopeBoxGridBuilder
     {
