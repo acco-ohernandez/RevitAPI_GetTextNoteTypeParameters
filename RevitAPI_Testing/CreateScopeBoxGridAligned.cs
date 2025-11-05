@@ -48,17 +48,19 @@ namespace RevitAPI_Testing
                     return Result.Cancelled;
                 }
 
-                // TEST: move copy so it touches on the right (no overlap)
-                double overlap = 1.0;
+                // TODO hook to your UI. 
+                double overlap = 2.0; // overlap in INTERNAL FEET (convert from UI if needed)
+                int rows = 2;
+                int cols = 2;
 
-                using (TransactionGroup tg = new TransactionGroup(doc, "Create scope box right copy"))
+                using (TransactionGroup transGroup = new TransactionGroup(doc, "Create scope box right copy"))
                 {
-                    tg.Start();
+                    transGroup.Start();
 
-                    using (Transaction tx = new Transaction(doc, "Duplicate to right by left edge"))
+                    using (Transaction trans_1 = new Transaction(doc, "Duplicate to right by left edge"))
                     {
-                        tx.Start();
-
+                        trans_1.Start();
+                        #region Testing of individual duplications
                         //// Create the right-side copy using the inspector helper
                         //ScopeBoxProperties rightCopy =
                         //    ScopeBoxInspector.DuplicateToRightByLeftEdge(doc, view, props, overlap);
@@ -78,19 +80,16 @@ namespace RevitAPI_Testing
                         //// Optional: force graphics update
                         //if (rightCopy != null && leftCopy != null && bottomCopy != null && topCopy != null)
                         //    doc.Regenerate();
-
+                        #endregion Testing of individual duplications
 
                         // Example call inside Execute(...)
                         var opts = new ScopeBoxGridOptions
                         {
-                            IncludeOriginalInResult = true,
-                            BaseName = "Scope Box",
-                            WriteNameToComments = true,
+                            IncludeOriginalInResult = true, // keep the original scope box in the result list
+                            BaseName = "Scope Box", // base name for new scope boxes
+                            WriteNameToComments = true, // write the generated name to the "Comments" parameter
                             ManageTransactions = false // we are already in a transaction. if true, it would create nested transactions (which Revit does not allow)
                         };
-
-                        int rows = 2;
-                        int cols = 2;
 
                         // overlapX / overlapY in INTERNAL FEET (convert from UI if needed)
                         double overlapX = overlap;
@@ -105,10 +104,10 @@ namespace RevitAPI_Testing
                             TaskDialog.Show("Scope Box Grid", $"Created {created.Count} scope boxes.");
                         }
 
-                        tx.Commit();
+                        trans_1.Commit();
                     }
 
-                    tg.Assimilate();
+                    transGroup.Assimilate();
                 }
 
                 return Result.Succeeded;
