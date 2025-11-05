@@ -1,6 +1,7 @@
 // ===========================================================
 #region Namespaces
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Autodesk.Revit.Attributes;
@@ -58,13 +59,51 @@ namespace RevitAPI_Testing
                     {
                         tx.Start();
 
-                        // Create the right-side copy using the inspector helper
-                        ScopeBoxProperties rightCopy =
-                            ScopeBoxInspector.DuplicateToRightByLeftEdge(doc, view, props, overlap);
+                        //// Create the right-side copy using the inspector helper
+                        //ScopeBoxProperties rightCopy =
+                        //    ScopeBoxInspector.DuplicateToRightByLeftEdge(doc, view, props, overlap);
 
-                        // Optional: force graphics update
-                        if (rightCopy != null)
+                        //// Create the left-side copy using the inspector helper
+                        //ScopeBoxProperties leftCopy =
+                        //    ScopeBoxInspector.DuplicateToLeftByRightEdge(doc, view, props, overlap);
+
+                        //// Create the bottom-side copy using the inspector helper
+                        //ScopeBoxProperties bottomCopy =
+                        //    ScopeBoxInspector.DuplicateDownByTopEdge(doc, view, props, overlap);
+
+                        //// Create the top-side copy using the inspector helper
+                        //ScopeBoxProperties topCopy =
+                        //    ScopeBoxInspector.DuplicateUpByBottomEdge(doc, view, props, overlap);
+
+                        //// Optional: force graphics update
+                        //if (rightCopy != null && leftCopy != null && bottomCopy != null && topCopy != null)
+                        //    doc.Regenerate();
+
+
+                        // Example call inside Execute(...)
+                        var opts = new ScopeBoxGridOptions
+                        {
+                            IncludeOriginalInResult = true,
+                            BaseName = "Scope Box",
+                            WriteNameToComments = true,
+                            ManageTransactions = false
+                        };
+
+                        int rows = 10;
+                        int cols = 5;
+
+                        // overlapX / overlapY in INTERNAL FEET (convert from UI if needed)
+                        double overlapX = overlap;
+                        double overlapY = overlap;
+
+                        IList<ElementId> created = ScopeBoxGridBuilder.BuildGrid(
+                            doc, view, scope, rows, cols, overlapX, overlapY, opts);
+
+                        if (created != null && created.Count > 0)
+                        {
                             doc.Regenerate();
+                            TaskDialog.Show("Scope Box Grid", $"Created {created.Count} scope boxes.");
+                        }
 
                         tx.Commit();
                     }

@@ -13,6 +13,44 @@ using Autodesk.Revit.DB;
 //  - Handles nested GeometryInstance with accumulated transforms.
 //  - Width/Height 2D are measured by edge-midpoint distances (as requested).
 // ============================================================================
+/// <summary>
+/// Snapshot of a scope box’ geometry and orientation as seen in a plan/ceiling plan view.
+/// <para>
+/// Instances are produced by <c>ScopeBoxInspector.Inspect</c>, which reads the scope box
+/// **curve endpoints** (not face/BoundingBox corners), applies any instance transforms,
+/// projects to the view plane, and orders the four true corners relative to the view’s
+/// Right/Up axes. This makes all values rotation-proof.
+/// </para>
+/// <para>
+/// Key guarantees:
+/// </para>
+/// <list type="bullet">
+///   <item>
+///     <description><b>Width2D/Height2D</b> are measured between **edge midpoints**
+///     (MidLeft↔MidRight and MidTop↔MidBottom), not from the oriented bounding box,
+///     so they remain correct at any angle.</description>
+///   </item>
+///   <item>
+///     <description><b>DirRight2D/DirDown2D</b> are unit vectors in the view plane aligned with
+///     the box’s visible top and left edges (TL→TR and TL→BL), suitable for tiling and offsets.</description>
+///   </item>
+///   <item>
+///     <description><b>Corners/Midpoints</b> are world points ordered for the view:
+///     TopLeft, TopRight, BottomLeft, BottomRight and MidTop/Right/Bottom/Left.</description>
+///   </item>
+/// </list>
+/// <para>
+/// Typical use: build rotation-aware grids or adjacent copies. For example,
+/// <c>stepX = Width2D − overlap</c> along <c>DirRight2D</c>, and
+/// <c>stepY = Height2D − overlap</c> along <c>−DirDown2D</c>. Use
+/// <see cref="StepX(double)"/> / <see cref="StepY(double)"/> helpers to compute these.
+/// </para>
+/// <para>
+/// This is a read-only data container (no transactions). Identity and diagnostic
+/// fields (e.g., <see cref="BoundingBox"/>/<see cref="LocalToWorld"/>) are included for
+/// completeness but are not used for 2D sizing.
+/// </para>
+/// </summary>
 
 namespace RevitAPI_Testing
 {
@@ -211,40 +249,170 @@ namespace RevitAPI_Testing
             return props;
         }
 
+
+
         /// <summary>
-        /// Duplicate and translate the copy so its LEFT-edge midpoint
-        /// coincides with the ORIGINAL’s RIGHT-edge midpoint, with overlap.
-        /// Translation follows the TRUE width axis in the view plane.
+        /// Duplicate to the RIGHT of the original so the COPY's LEFT-edge midpoint
+        /// lands on the ORIGINAL's RIGHT-edge midpoint (then apply overlap).
+        /// Positive overlap = interpenetrate; negative = gap.
         /// </summary>
         public static ScopeBoxProperties DuplicateToRightByLeftEdge(
-        Document doc,
-        View planView,
-        ScopeBoxProperties original,
-        double overlap)
+            Document doc, View planView, ScopeBoxProperties original, double overlap)
         {
             if (doc == null) throw new ArgumentNullException(nameof(doc));
             if (planView == null) throw new ArgumentNullException(nameof(planView));
             if (original == null) throw new ArgumentNullException(nameof(original));
 
-            // Vector from LEFT-edge midpoint to RIGHT-edge midpoint, strictly in the view plane
-            XYZ edgeMidVector = original.MidRight - original.MidLeft;
-            edgeMidVector = edgeMidVector - original.ViewNormal.Multiply(edgeMidVector.DotProduct(original.ViewNormal));
+            // Span from original LEFT edge → RIGHT edge (right-ish axis).
+            // Using the exact midpoint-to-midpoint vector guarantees precise touching at overlap=0.
+            return DuplicateByMidpointSpan(
+                doc, planView, original,
+                fromMidpoint: original.MidLeft,     // start at left
+                toMidpoint: original.MidRight,    // direction toward right
+                overlap: overlap);
+        }
 
-            double span = edgeMidVector.GetLength();
-            if (span <= 1e-12)
-                throw new InvalidOperationException("Scope box edge midpoints are coincident (degenerate).");
+        /// <summary>
+        /// Convenience overload that inspects the element first, then duplicates.
+        /// </summary>
+        public static ScopeBoxProperties DuplicateToRightByLeftEdge(
+            Document doc, View planView, Element scopeBoxElement, double overlap)
+        {
+            if (scopeBoxElement == null) throw new ArgumentNullException(nameof(scopeBoxElement));
+            var props = Inspect(scopeBoxElement, planView);
+            return DuplicateToRightByLeftEdge(doc, planView, props, overlap);
+        }
 
-            // Unit axis along the edge-midpoint span
-            XYZ axis = edgeMidVector / span;
 
-            // Move by the exact span, then adjust for overlap along the same axis
-            // Add a microscopic nudge to avoid a hairline gap from floating rounding
+        // ======================================================================
+        //  ScopeBox movers – midpoint-span method (rotation-proof)
+        //  Positive overlap = interpenetrate; Negative overlap = gap
+        // ======================================================================
+
+        /// <summary>
+        /// Duplicate to the LEFT of the original so the COPY's RIGHT-edge midpoint
+        /// lands on the ORIGINAL's LEFT-edge midpoint (then apply overlap).
+        /// </summary>
+        public static ScopeBoxProperties DuplicateToLeftByRightEdge(
+            Document doc, View planView, ScopeBoxProperties original, double overlap)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+            if (planView == null) throw new ArgumentNullException(nameof(planView));
+            if (original == null) throw new ArgumentNullException(nameof(original));
+
+            // Span from original RIGHT edge → LEFT edge (left-ish axis)
+            return DuplicateByMidpointSpan(
+                doc, planView, original,
+                fromMidpoint: original.MidRight,    // start at original right
+                toMidpoint: original.MidLeft,     // direction toward left
+                overlap: overlap);
+        }
+
+        /// <summary>Overload: element version.</summary>
+        public static ScopeBoxProperties DuplicateToLeftByRightEdge(
+            Document doc, View planView, Element scopeBoxElement, double overlap)
+        {
+            if (scopeBoxElement == null) throw new ArgumentNullException(nameof(scopeBoxElement));
+            var props = Inspect(scopeBoxElement, planView);
+            return DuplicateToLeftByRightEdge(doc, planView, props, overlap);
+        }
+
+        /// <summary>
+        /// Duplicate DOWN so the COPY's TOP-edge midpoint lands on the ORIGINAL's
+        /// BOTTOM-edge midpoint (then apply overlap).
+        /// </summary>
+        public static ScopeBoxProperties DuplicateDownByTopEdge(
+            Document doc, View planView, ScopeBoxProperties original, double overlap)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+            if (planView == null) throw new ArgumentNullException(nameof(planView));
+            if (original == null) throw new ArgumentNullException(nameof(original));
+
+            // Span from original TOP edge → BOTTOM edge (down-ish axis)
+            return DuplicateByMidpointSpan(
+                doc, planView, original,
+                fromMidpoint: original.MidTop,       // start at top
+                toMidpoint: original.MidBottom,    // direction toward bottom
+                overlap: overlap);
+        }
+
+        /// <summary>Overload: element version.</summary>
+        public static ScopeBoxProperties DuplicateDownByTopEdge(
+            Document doc, View planView, Element scopeBoxElement, double overlap)
+        {
+            if (scopeBoxElement == null) throw new ArgumentNullException(nameof(scopeBoxElement));
+            var props = Inspect(scopeBoxElement, planView);
+            return DuplicateDownByTopEdge(doc, planView, props, overlap);
+        }
+
+        /// <summary>
+        /// Duplicate UP so the COPY's BOTTOM-edge midpoint lands on the ORIGINAL's
+        /// TOP-edge midpoint (then apply overlap).
+        /// </summary>
+        public static ScopeBoxProperties DuplicateUpByBottomEdge(
+            Document doc, View planView, ScopeBoxProperties original, double overlap)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+            if (planView == null) throw new ArgumentNullException(nameof(planView));
+            if (original == null) throw new ArgumentNullException(nameof(original));
+
+            // Span from original BOTTOM edge → TOP edge (up-ish axis)
+            return DuplicateByMidpointSpan(
+                doc, planView, original,
+                fromMidpoint: original.MidBottom,  // start at bottom
+                toMidpoint: original.MidTop,     // direction toward top
+                overlap: overlap);
+        }
+
+        /// <summary>Overload: element version.</summary>
+        public static ScopeBoxProperties DuplicateUpByBottomEdge(
+            Document doc, View planView, Element scopeBoxElement, double overlap)
+        {
+            if (scopeBoxElement == null) throw new ArgumentNullException(nameof(scopeBoxElement));
+            var props = Inspect(scopeBoxElement, planView);
+            return DuplicateUpByBottomEdge(doc, planView, props, overlap);
+        }
+
+        // ----------------------------------------------------------------------
+        // Shared mover core – uses the true vector between edge midpoints.
+        // This guarantees “just touching” at overlap=0 with no rounding gap.
+        // ----------------------------------------------------------------------
+        private static ScopeBoxProperties DuplicateByMidpointSpan(
+            Document doc,
+            View planView,
+            ScopeBoxProperties original,
+            XYZ fromMidpoint,
+            XYZ toMidpoint,
+            double overlap)
+        {
+            // 1) Exact span vector between the two relevant edge midpoints (world)
+            XYZ spanVectorWorld = toMidpoint - fromMidpoint;
+
+            // 2) Project to the plan view plane (pure 2D move in the view)
+            XYZ n = original.ViewNormal.Normalize();
+            spanVectorWorld = spanVectorWorld - n.Multiply(spanVectorWorld.DotProduct(n));
+
+            double spanLength = spanVectorWorld.GetLength();
+            if (spanLength <= 1e-12)
+                throw new InvalidOperationException("Scope box midpoint span is degenerate.");
+
+            // 3) Unit axis along the span
+            XYZ axis = spanVectorWorld / spanLength;
+
+            // 4) Final move = exact span minus overlap (positive overlap = interpenetrate)
+            //    Add a microscopic nudge only when overlap is effectively zero to defeat hairline gaps.
             const double NUDGE = 1e-6; // feet (~0.0003 mm)
-            double moveDist = span - overlap + ((Math.Abs(overlap) < 1e-9) ? NUDGE : 0.0);
+            bool zeroish = Math.Abs(overlap) < 1e-9;
+            double moveDistance = spanLength - overlap + (zeroish ? NUDGE : 0.0);
 
-            XYZ translation = axis.Multiply(moveDist);
+            // Optional safety clamp if users type huge overlaps (comment out if you prefer no clamp)
+            // double maxSafe = spanLength - 1e-9;
+            // if (moveDistance < 0) moveDistance = 0;            // don't cross back through the original
+            // if (moveDistance > maxSafe) moveDistance = maxSafe; // don't fully pass beyond opposite edge
 
-            // Copy (initially coincident) and move
+            XYZ translation = axis.Multiply(moveDistance);
+
+            // 5) Copy (initially coincident) and move
             ICollection<ElementId> newIds = ElementTransformUtils.CopyElement(doc, original.Id, XYZ.Zero);
             if (newIds == null || newIds.Count == 0)
                 throw new InvalidOperationException("CopyElement failed to create a new scope box.");
@@ -253,15 +421,13 @@ namespace RevitAPI_Testing
             if (translation.GetLength() > 1e-12)
                 ElementTransformUtils.MoveElement(doc, newId, translation);
 
+            // 6) Return fresh properties for the new copy (geometry-first Inspect)
             return Inspect(doc.GetElement(newId), planView);
         }
 
-        public static ScopeBoxProperties DuplicateToRightByLeftEdge(
-            Document doc, View planView, Element scopeBoxElement, double overlap)
-        {
-            if (scopeBoxElement == null) throw new ArgumentNullException(nameof(scopeBoxElement));
-            return DuplicateToRightByLeftEdge(doc, planView, Inspect(scopeBoxElement, planView), overlap);
-        }
+
+
+
 
         // =========================== Geometry (curves) ===========================
 

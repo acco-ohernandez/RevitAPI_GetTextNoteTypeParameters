@@ -179,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Common\Classes\ScopeBoxGridOptions.cs" />
     <Compile Include="Common\Classes\ScopeBoxProperties.cs" />
     <Compile Include="Forms\TextTypeDataWindow.xaml.cs">
       <DependentUpon>TextTypeDataWindow.xaml</DependentUpon>
