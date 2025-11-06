@@ -50,8 +50,8 @@ namespace RevitAPI_Testing
 
                 // TODO hook to your UI. 
                 double overlap = 2.0; // overlap in INTERNAL FEET (convert from UI if needed)
-                int rows = 2;
-                int cols = 2;
+                int rows = 5;
+                int cols = 3;
 
                 using (TransactionGroup transGroup = new TransactionGroup(doc, "Create scope box right copy"))
                 {
