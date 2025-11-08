@@ -10,11 +10,20 @@
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
   </AddIn>
   <AddIn Type="Command">
-    <Text>RevitAPI_Testing - Command 2</Text>
+    <Text>RevitAPI_Testing - Make Scope Box Grid</Text>
     <Description>Some description for RevitAPI_Testing</Description>
     <Assembly>RevitAPI_Testing.dll</Assembly>
     <FullClassName>RevitAPI_Testing.CreateScopeBoxGridAligned</FullClassName>
     <ClientId>a04de686-0eca-4db4-b652-511bc09d5000</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+   <AddIn Type="Command">
+    <Text>RevitAPI_Testing - Make Matchlines</Text>
+    <Description>Some description for RevitAPI_Testing</Description>
+    <Assembly>RevitAPI_Testing.dll</Assembly>
+    <FullClassName>RevitAPI_Testing.Cmd_MatchlineDetailLines</FullClassName>
+    <ClientId>8DE9D15B-586E-416A-A81D-D510CB31B8D3</ClientId>
     <VendorId>com.YOUR COMPANY NAME</VendorId>
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
   </AddIn>

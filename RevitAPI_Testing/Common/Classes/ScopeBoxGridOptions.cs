@@ -285,6 +285,7 @@ namespace RevitAPI_Testing
             XYZ span = toMidpoint - fromMidpoint;
             span = span - n.Multiply(span.DotProduct(n));
 
+            // spanLen 
             double spanLen = span.GetLength();
             if (spanLen <= 1e-12)
                 throw new InvalidOperationException("Scope box midpoint span is degenerate.");

@@ -23,6 +23,10 @@ namespace RevitAPI_Testing
             Document doc = uidoc.Document;
             View view = doc.ActiveView;
 
+            // execut the Cmd_MatchlineDetailLines
+            var executMatchLine = new Cmd_MatchlineDetailLines();
+            executMatchLine.Execute(commandData, ref message, elements);
+
             try
             {
                 // Plan / RCP only
@@ -95,14 +99,51 @@ namespace RevitAPI_Testing
                         double overlapX = overlap;
                         double overlapY = overlap;
 
-                        IList<ElementId> created = ScopeBoxGridBuilder.BuildGrid(
+                        IList<ElementId> createdScopeBoxIds = ScopeBoxGridBuilder.BuildGrid(
                             doc, view, scope, rows, cols, overlapX, overlapY, opts);
 
-                        if (created != null && created.Count > 0)
+                        if (createdScopeBoxIds != null && createdScopeBoxIds.Count > 0)
                         {
                             doc.Regenerate();
-                            TaskDialog.Show("Scope Box Grid", $"Created {created.Count} scope boxes.");
+                            TaskDialog.Show("Scope Box Grid", $"Created {createdScopeBoxIds.Count} scope boxes.");
                         }
+
+
+
+                        var guideOptions = new GuideLineOptions
+                        {
+                            ManageTransactions = false,                     // you’re already inside a Transaction
+                            DeleteExisting = false,                      // clear previous guides of same style in this view
+                            LineStyleName = "Matchline Reference",
+                            LineColor = new Autodesk.Revit.DB.Color(0, 255, 255), // cyan
+                            LinePatternName = "Dash",
+                            LineWeight = 2,
+                            TagIntersections = false
+                        };
+
+                        IList<ElementId> createdGuideIds = ScopeBoxGuideLineBuilder.BuildGuides(
+                            doc,
+                            doc.ActiveView,
+                            createdScopeBoxIds /* from your grid builder, row-major */,
+                            rows,
+                            cols,
+                            guideOptions);
+
+                        //var guideOpts = new GuideLineOptions
+                        //{
+                        //    ManageTransactions = false,
+                        //    DeleteExisting = true,
+                        //    LineStyleName = "Matchline Reference",
+                        //    LineColor = new Autodesk.Revit.DB.Color(0, 255, 255), // cyan
+                        //    LinePatternName = "Dash",
+                        //    LineWeight = 2,
+                        //    TagIntersections = false
+                        //};
+
+                        //// scopeBoxIds: the ids returned by your grid builder (or collected from selection)
+                        //// rows/cols: the grid dimensions used to create the boxes
+                        //IList<ElementId> guideIds = ScopeBoxGuideLineBuilder.BuildGuides(doc, doc.ActiveView, created, rows, cols, guideOpts);
+
 
                         trans_1.Commit();
                     }
