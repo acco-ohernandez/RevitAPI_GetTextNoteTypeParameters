@@ -18,11 +18,20 @@
     <VendorId>com.YOUR COMPANY NAME</VendorId>
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
   </AddIn>
-   <AddIn Type="Command">
+  <AddIn Type="Command">
     <Text>RevitAPI_Testing - Make Matchlines</Text>
     <Description>Some description for RevitAPI_Testing</Description>
     <Assembly>RevitAPI_Testing.dll</Assembly>
     <FullClassName>RevitAPI_Testing.Cmd_MatchlineDetailLines</FullClassName>
+    <ClientId>A58512F9-69A2-4906-AC0C-2B8C1BE2841C</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Command">
+    <Text>RevitAPI_Testing - ViewReferencesDuplicates</Text>
+    <Description>Some description for RevitAPI_Testing</Description>
+    <Assembly>RevitAPI_Testing.dll</Assembly>
+    <FullClassName>RevitAPI_Testing.Cmd_CreateViewReferencesDuplicates_Dev</FullClassName>
     <ClientId>8DE9D15B-586E-416A-A81D-D510CB31B8D3</ClientId>
     <VendorId>com.YOUR COMPANY NAME</VendorId>
     <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
